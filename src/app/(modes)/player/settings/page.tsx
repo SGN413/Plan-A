@@ -17,8 +17,12 @@ export default function PlayerSettingsPage() {
 
     const handleLogout = () => {
         if (confirm('로그아웃 하시겠습니까?')) {
-            localStorage.clear();
-            router.replace('/');
+            localStorage.removeItem('plana_user_name');
+            localStorage.removeItem('plana_user_phone');
+            localStorage.removeItem('plana_user_birth');
+            localStorage.removeItem('plana_user_team');
+            localStorage.removeItem('plana_user_role');
+            window.location.href = '/';
         }
     };
 

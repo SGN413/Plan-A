@@ -25,8 +25,15 @@ export default function TeamSettingsPage() {
 
     const handleLogout = () => {
         if (confirm('로그아웃 하시겠습니까?')) {
-            localStorage.clear();
-            router.replace('/');
+            // 전체 clear() 대신 plana 관련 인증 데이터만 선택적 삭제
+            localStorage.removeItem('plana_user_name');
+            localStorage.removeItem('plana_user_phone');
+            localStorage.removeItem('plana_user_birth');
+            localStorage.removeItem('plana_user_team');
+            localStorage.removeItem('plana_user_role');
+
+            // 삭제 직후 빠른 페이지 전환(홈 진입점)으로 유도
+            window.location.href = '/';
         }
     };
 
