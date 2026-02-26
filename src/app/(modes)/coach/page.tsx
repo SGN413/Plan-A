@@ -156,6 +156,7 @@ function NotificationPanel({
 export default function CoachDashboardHome() {
     const router = useRouter();
     const [userName, setUserName] = useState('');
+    const [teamName, setTeamName] = useState('');
     const [bannerTab, setBannerTab] = useState<'notice' | 'condition'>('notice');
     const [listType, setListType] = useState<'all' | 'issue'>('all');
     const [isAlerting, setIsAlerting] = useState<string | null>(null);
@@ -172,7 +173,9 @@ export default function CoachDashboardHome() {
 
     useEffect(() => {
         const name = localStorage.getItem('plana_user_name');
+        const team = localStorage.getItem('plana_user_team');
         if (name) setUserName(name);
+        if (team) setTeamName(team);
     }, []);
 
     const handlePushAlert = (name: string) => {
@@ -196,14 +199,19 @@ export default function CoachDashboardHome() {
             {/* 1. Header */}
             <header className="px-5 pt-6 pb-2 flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 flex items-center justify-center">
-                        <img src="/plana_logo.png" alt="PlanA" className="w-full h-auto" />
+                    {/* 팀 로고 (팀명 이니셜 활용) */}
+                    <div className="w-10 h-10 flex items-center justify-center bg-gray-900 rounded-xl shadow-sm border border-gray-100">
+                        <span className="text-white font-black text-xl tracking-tighter uppercase italic">
+                            {teamName ? teamName.slice(0, 1) : 'P'}
+                        </span>
                     </div>
                     <div>
                         <h1 className="text-xl font-black text-gray-900 tracking-tight">
-                            {userName ? `${userName} 코치님` : 'PlanA 코치'}
+                            {userName ? `${userName} 코치` : '코치'}
                         </h1>
-                        <p className="text-[10px] font-bold text-gray-400">Premium Performance System</p>
+                        <p className="text-[10px] font-bold text-xion-red">
+                            {teamName || 'PLAN A Team'}
+                        </p>
                     </div>
                 </div>
                 <div className="flex items-center space-x-1 relative">

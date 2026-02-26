@@ -7,8 +7,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function TeamSettingsPage() {
     const router = useRouter();
-    const [teamName, setTeamName] = useState('에이스 아카데미');
+    const [teamName, setTeamName] = useState('');
+    const [userName, setUserName] = useState('');
     const [isSaved, setIsSaved] = useState(false);
+
+    React.useEffect(() => {
+        const team = localStorage.getItem('plana_user_team');
+        const name = localStorage.getItem('plana_user_name');
+        if (team) setTeamName(team);
+        if (name) setUserName(name);
+    }, []);
 
     const handleSave = () => {
         setIsSaved(true);
@@ -39,7 +47,9 @@ export default function TeamSettingsPage() {
                 <section className="flex flex-col items-center">
                     <div className="relative group">
                         <div className="w-32 h-32 rounded-[40px] bg-gray-50 flex items-center justify-center border-4 border-white shadow-xl shadow-gray-200/50 overflow-hidden">
-                            <span className="text-5xl font-black text-xion-red italic">XI</span>
+                            <span className="text-5xl font-black text-xion-red italic uppercase">
+                                {teamName ? teamName.slice(0, 1) : 'P'}
+                            </span>
                         </div>
                         <button className="absolute bottom-1 right-1 w-10 h-10 bg-gray-900 text-white rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-transform">
                             <Camera size={18} />
@@ -61,17 +71,24 @@ export default function TeamSettingsPage() {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Location</label>
-                        <div className="w-full bg-gray-50 rounded-2xl px-5 py-4 text-sm font-bold text-gray-400">
-                            서울시 강남구 (준비 중)
-                        </div>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Coach Name</label>
+                        <input
+                            type="text"
+                            value={userName}
+                            onChange={(e) => setUserName(e.target.value)}
+                            className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-base font-bold text-gray-900 focus:ring-2 focus:ring-xion-red/20 transition-all"
+                        />
                     </div>
                 </section>
 
                 {/* Save Button */}
                 <section className="pt-4">
                     <button
-                        onClick={handleSave}
+                        onClick={() => {
+                            localStorage.setItem('plana_user_team', teamName);
+                            localStorage.setItem('plana_user_name', userName);
+                            handleSave();
+                        }}
                         className="w-full bg-xion-red text-white py-4 rounded-3xl font-black text-lg shadow-xl shadow-xion-red/20 active:scale-[0.98] transition-all flex items-center justify-center space-x-2"
                     >
                         <Save size={20} />

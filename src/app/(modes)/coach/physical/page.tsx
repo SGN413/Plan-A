@@ -15,8 +15,8 @@ import { PLAYERS, Player } from '@/constants/players';
 
 export default function PhysicalPage() {
     const router = useRouter();
-    // 첫 번째 선수로 초기화하되 데이터는 중립 상태로 설정
-    const [selectedPlayer, setSelectedPlayer] = useState<Player>(PLAYERS[0]);
+    // 첫 번째 선수로 초기화하되 데이터는 중립 상태로 설정 (빈 배열 시 undefined 허용)
+    const [selectedPlayer, setSelectedPlayer] = useState<Player | undefined>(PLAYERS[0]);
 
     // 실제 데이터 연동 전까지 중립적인 차트 데이터 제공
     const chartData = [
@@ -41,17 +41,23 @@ export default function PhysicalPage() {
 
             {/* Player Selector Scroll */}
             <div className="flex space-x-3 overflow-x-auto no-scrollbar mb-8 -mx-1 px-1">
-                {PLAYERS.map((player) => (
-                    <button
-                        key={player.id}
-                        onClick={() => setSelectedPlayer(player)}
-                        className={`flex-shrink-0 px-4 py-2 rounded-2xl border-2 transition-all font-bold text-sm
-              ${selectedPlayer.id === player.id ? 'border-xion-red bg-xion-red text-white' : 'border-gray-100 bg-white text-gray-400'}
-            `}
-                    >
-                        {player.name}
-                    </button>
-                ))}
+                {PLAYERS.length === 0 ? (
+                    <div className="flex-1 text-center py-2 bg-gray-50 rounded-2xl text-xs font-bold text-gray-400">
+                        등록된 선수가 없습니다.
+                    </div>
+                ) : (
+                    PLAYERS.map((player) => (
+                        <button
+                            key={player.id}
+                            onClick={() => setSelectedPlayer(player)}
+                            className={`flex-shrink-0 px-4 py-2 rounded-2xl border-2 transition-all font-bold text-sm
+                  ${selectedPlayer?.id === player.id ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-100 bg-white text-gray-400'}
+                `}
+                        >
+                            {player.name}
+                        </button>
+                    ))
+                )}
             </div>
 
             {/* Radar Chart Section */}
@@ -64,20 +70,22 @@ export default function PhysicalPage() {
                                 dataKey="subject"
                                 tick={{ fill: '#9CA3AF', fontSize: 10, fontWeight: 700 }}
                             />
-                            <Radar
-                                name={selectedPlayer.name}
-                                dataKey="A"
-                                stroke="#E11D48"
-                                fill="#E11D48"
-                                fillOpacity={0.1}
-                                strokeWidth={2}
-                            />
+                            {selectedPlayer && (
+                                <Radar
+                                    name={selectedPlayer.name}
+                                    dataKey="A"
+                                    stroke="#E11D48"
+                                    fill="#E11D48"
+                                    fillOpacity={0.1}
+                                    strokeWidth={2}
+                                />
+                            )}
                         </RadarChart>
                     </ResponsiveContainer>
                 </div>
                 <div className="text-center mt-4">
-                    <h3 className="text-xl font-black text-gray-900">{selectedPlayer.name}</h3>
-                    <p className="text-sm font-bold text-gray-400">{selectedPlayer.position} • No Data</p>
+                    <h3 className="text-xl font-black text-gray-900">{selectedPlayer?.name || '선수 없음'}</h3>
+                    <p className="text-sm font-bold text-gray-400">{selectedPlayer?.position || '-'} • No Data</p>
                 </div>
             </section>
 
