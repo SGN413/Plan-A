@@ -17,16 +17,17 @@ export default function PlayerSetupPage() {
     const [mode, setMode] = useState<Mode>('search');
     const [query, setQuery] = useState('');
     const [selectedTeam, setSelectedTeam] = useState<typeof ALL_TEAMS[0] | null>(null);
+    const [inputCode, setInputCode] = useState('');
 
     const filtered = query.trim()
         ? ALL_TEAMS.filter((t) =>
-            t.name.toLowerCase().includes(query.toLowerCase()) ||
-            t.code.toLowerCase().includes(query.toLowerCase())
+            t.name.toLowerCase().includes(query.toLowerCase())
         )
         : ALL_TEAMS;
 
     const handleSelectTeam = (team: typeof ALL_TEAMS[0]) => {
         setSelectedTeam(team);
+        setInputCode('');
         setMode('apply');
     };
 
@@ -90,7 +91,6 @@ export default function PlayerSetupPage() {
                                                 <p className="font-black text-gray-900 text-base">{team.name}</p>
                                                 <p className="text-xs text-gray-400 font-medium mt-0.5">{team.location} • 선수 {team.members}명 • {team.coach}</p>
                                             </div>
-                                            <span className="text-[10px] font-black tracking-widest text-gray-300">{team.code}</span>
                                         </motion.button>
                                     ))
                                 )}
@@ -117,11 +117,27 @@ export default function PlayerSetupPage() {
                                 </div>
                             </div>
 
+                            {/* 팀 코드 입력 */}
+                            <div className="mb-8">
+                                <label className="text-xs font-black text-gray-900 uppercase tracking-widest px-1 mb-2 block">
+                                    팀 연결 코드 (6자리)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={inputCode}
+                                    onChange={(e) => setInputCode(e.target.value.toUpperCase())}
+                                    placeholder="AAAAAA"
+                                    maxLength={6}
+                                    className="w-full text-center text-3xl tracking-[0.4em] font-black bg-gray-50 border-none rounded-2xl px-5 py-4 focus:ring-2 focus:ring-gray-900 transition-all placeholder-gray-300 uppercase"
+                                />
+                            </div>
+
                             <div className="space-y-3">
                                 <motion.button
-                                    whileTap={{ scale: 0.97 }}
+                                    whileTap={inputCode === selectedTeam.code ? { scale: 0.97 } : {}}
                                     onClick={handleApply}
-                                    className="w-full bg-gray-900 text-white py-4 rounded-[24px] font-black text-base flex items-center justify-center space-x-2"
+                                    disabled={inputCode !== selectedTeam.code}
+                                    className="w-full bg-gray-900 text-white py-4 rounded-[24px] font-black text-base flex items-center justify-center space-x-2 disabled:opacity-30 transition-all"
                                 >
                                     <span>가입 신청하기</span>
                                     <ArrowRight size={18} />

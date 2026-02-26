@@ -15,8 +15,9 @@ export default function EntrancePage() {
     const timer = setTimeout(() => {
       const savedRole = localStorage.getItem('plana_user_role');
       const savedName = localStorage.getItem('plana_user_name');
+      const autoLogin = localStorage.getItem('plana_auto_login');
 
-      if (savedRole && savedName) {
+      if (savedRole && savedName && autoLogin === 'true') {
         // 이미 가입된 회원이면 대시보드로 자동 이동 (isLoading 풀지 않음)
         if (savedRole === 'coach') {
           router.replace('/coach');
@@ -95,12 +96,11 @@ export default function EntrancePage() {
                   <img
                     src="/plana_logo.png"
                     alt="PlanA"
-                    className="w-32 h-auto opacity-80"
+                    className="w-40 h-auto opacity-90"
                   />
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900 tracking-tight">반갑습니다.</h1>
-                  <p className="text-sm text-gray-400 font-medium mt-1">관리하시는 계정 유형을 선택해주세요.</p>
                 </div>
               </header>
 

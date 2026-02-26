@@ -10,6 +10,7 @@ export default function LoginPage() {
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [error, setError] = useState('');
+    const [autoLogin, setAutoLogin] = useState(false);
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
@@ -21,6 +22,7 @@ export default function LoginPage() {
         const savedRole = localStorage.getItem('plana_user_role');
 
         if (name === savedName && phone === savedPhone && savedRole) {
+            localStorage.setItem('plana_auto_login', autoLogin ? 'true' : 'false');
             router.replace(`/${savedRole}`);
         } else {
             setError('가입된 정보와 일치하지 않습니다. 회원가입을 먼저 진행해주세요.');
@@ -40,14 +42,9 @@ export default function LoginPage() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mb-12"
+                    className="mb-12 flex justify-center"
                 >
-                    <h1 className="text-3xl font-black text-gray-900 leading-tight mb-2">
-                        다시 오셨군요!<br />환영합니다.
-                    </h1>
-                    <p className="text-sm text-gray-400 font-medium">
-                        가입하신 이름과 전화번호를 입력해주세요.
-                    </p>
+                    <img src="/plana_logo.png" alt="PlanA" className="w-40 h-auto" />
                 </motion.div>
 
                 <form onSubmit={handleLogin} className="space-y-6">
@@ -76,6 +73,16 @@ export default function LoginPage() {
                             className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-base font-bold text-gray-900 focus:ring-2 focus:ring-gray-900 transition-all placeholder-gray-300 tracking-wider"
                         />
                     </div>
+
+                    <label className="flex items-center space-x-2 cursor-pointer mt-2 pl-1">
+                        <input
+                            type="checkbox"
+                            checked={autoLogin}
+                            onChange={(e) => setAutoLogin(e.target.checked)}
+                            className="w-4 h-4 rounded text-gray-900 focus:ring-gray-900 cursor-pointer"
+                        />
+                        <span className="text-xs font-bold text-gray-400">자동 로그인</span>
+                    </label>
 
                     {error && (
                         <motion.p
