@@ -1,11 +1,26 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    Settings, ChevronRight, Plus, Bell, AlertCircle,
-    UserPlus, Megaphone, X, Calendar, CreditCard, MessageCircle
+    Bell,
+    Settings,
+    Plus,
+    X,
+    Megaphone,
+    Activity,
+    Calendar,
+    ChevronRight,
+    Search,
+    Filter,
+    MoreHorizontal,
+    UserPlus,
+    CheckCircle2,
+    AlertCircle,
+    CreditCard,
+    MessageCircle
 } from 'lucide-react';
 import { useNotices } from '@/hooks/useStore';
 import { PLAYERS, Player } from '@/constants/players';
@@ -139,6 +154,8 @@ function NotificationPanel({
 // 메인 대시보드
 // ============================================================
 export default function CoachDashboardHome() {
+    const router = useRouter();
+    const [userName, setUserName] = useState('');
     const [bannerTab, setBannerTab] = useState<'notice' | 'condition'>('notice');
     const [listType, setListType] = useState<'all' | 'issue'>('all');
     const [isAlerting, setIsAlerting] = useState<string | null>(null);
@@ -152,6 +169,11 @@ export default function CoachDashboardHome() {
     const markAllRead = () => setNotifications(prev => prev.map(n => ({ ...n, read: true })));
 
     const { notices, addNotice } = useNotices();
+
+    useEffect(() => {
+        const name = localStorage.getItem('plana_user_name');
+        if (name) setUserName(name);
+    }, []);
 
     const handlePushAlert = (name: string) => {
         setIsAlerting(name);
@@ -169,7 +191,7 @@ export default function CoachDashboardHome() {
     const issueCount = PLAYERS.filter(p => p.status !== '정상').length;
 
     return (
-        <main className="min-h-screen bg-white pb-24 font-pretendard">
+        <main className="min-h-screen bg-white pb-36 font-pretendard">
 
             {/* 1. Header */}
             <header className="px-5 pt-6 pb-2 flex items-center justify-between">
@@ -178,7 +200,9 @@ export default function CoachDashboardHome() {
                         <img src="/plana_logo.png" alt="PlanA" className="w-full h-auto" />
                     </div>
                     <div>
-                        <h1 className="text-xl font-black text-gray-900 tracking-tight">PlanA 코치</h1>
+                        <h1 className="text-xl font-black text-gray-900 tracking-tight">
+                            {userName ? `${userName} 코치님` : 'PlanA 코치'}
+                        </h1>
                         <p className="text-[10px] font-bold text-gray-400">Premium Performance System</p>
                     </div>
                 </div>

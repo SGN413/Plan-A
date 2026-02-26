@@ -1,8 +1,9 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     Calendar,
     Activity,
@@ -11,7 +12,9 @@ import {
     ChevronRight,
     ClipboardCheck,
     Award,
-    Zap
+    Zap,
+    X,
+    LogOut
 } from 'lucide-react';
 import {
     ResponsiveContainer,
@@ -32,22 +35,47 @@ const workloadData = [
 ];
 
 export default function PlayerDashboardHome() {
+    const router = useRouter();
+    const [userName, setUserName] = useState('');
+
+    useEffect(() => {
+        const name = localStorage.getItem('plana_user_name');
+        if (name) setUserName(name);
+    }, []);
+
+    const handleLogout = () => {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            localStorage.clear();
+            router.replace('/');
+        }
+    };
     return (
-        <main className="min-h-screen bg-gray-50 pb-28 font-pretendard">
+        <main className="min-h-screen bg-gray-50 pb-40 font-pretendard">
             {/* 1. Header & Greeting */}
-            <header className="px-6 pt-8 pb-6 bg-white rounded-b-[40px] shadow-sm">
+            <header className="px-6 pt-10 pb-8 bg-white rounded-b-[40px] shadow-sm ring-1 ring-gray-100">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 flex items-center justify-center">
                             <img src="/plana_logo.png" alt="PlanA" className="w-full h-auto" />
                         </div>
                         <div>
-                            <h1 className="text-lg font-black text-gray-900 tracking-tight">안녕하세요, 김태현 선수!</h1>
+                            <h1 className="text-lg font-black text-gray-900 tracking-tight">
+                                {userName ? `안녕하세요, ${userName} 선수!` : '안녕하세요!'}
+                            </h1>
                             <p className="text-[10px] font-bold text-gray-400">PlanA Academy • No. 10</p>
                         </div>
                     </div>
-                    <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 border border-gray-100">
-                        <Calendar size={20} />
+                    <div className="flex items-center space-x-2">
+                        <div className="w-10 h-10 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 border border-gray-100">
+                            <Calendar size={20} />
+                        </div>
+                        <button
+                            onClick={handleLogout}
+                            className="w-10 h-10 rounded-2xl bg-red-50 flex items-center justify-center text-red-400 border border-red-100"
+                            title="로그아웃"
+                        >
+                            <X size={20} />
+                        </button>
                     </div>
                 </div>
 

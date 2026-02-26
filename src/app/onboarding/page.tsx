@@ -161,8 +161,8 @@ export default function OnboardingPage() {
                                     onClick={() => handleRoleSelect(role.id)}
                                     disabled={role.disabled}
                                     className={`w-full flex items-center space-x-5 p-5 rounded-[24px] border-2 text-left transition-all ${role.disabled
-                                            ? 'border-gray-100 bg-gray-50 opacity-40 cursor-not-allowed'
-                                            : 'border-gray-100 bg-white hover:border-gray-900 hover:shadow-lg group cursor-pointer'
+                                        ? 'border-gray-100 bg-gray-50 opacity-40 cursor-not-allowed'
+                                        : 'border-gray-100 bg-white hover:border-gray-900 hover:shadow-lg group cursor-pointer'
                                         }`}
                                 >
                                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${role.disabled ? 'bg-gray-100 text-gray-400' : 'bg-gray-50 text-gray-900 group-hover:bg-gray-900 group-hover:text-white'

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Camera, Save, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, Camera, Save, CheckCircle2, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function TeamSettingsPage() {
@@ -15,8 +15,15 @@ export default function TeamSettingsPage() {
         setTimeout(() => setIsSaved(false), 2000);
     };
 
+    const handleLogout = () => {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            localStorage.clear();
+            router.replace('/');
+        }
+    };
+
     return (
-        <main className="min-h-screen bg-white pb-10 font-pretendard">
+        <main className="min-h-screen bg-white pb-40 font-pretendard">
             {/* Header */}
             <header className="px-5 pt-6 pb-4 flex items-center justify-between border-b border-gray-50">
                 <div className="flex items-center space-x-2">
@@ -70,6 +77,20 @@ export default function TeamSettingsPage() {
                         <Save size={20} />
                         <span>설정 저장하기</span>
                     </button>
+                </section>
+
+                {/* Logout Button */}
+                <section className="pt-10 border-t border-gray-50">
+                    <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center justify-center space-x-2 py-4 rounded-3xl text-red-500 font-bold hover:bg-red-50 transition-colors"
+                    >
+                        <LogOut size={20} />
+                        <span>로그아웃</span>
+                    </button>
+                    <p className="text-center text-[10px] text-gray-300 font-medium mt-4">
+                        PLAN A Soccer v0.1.0 • Stable
+                    </p>
                 </section>
             </div>
 

@@ -13,17 +13,18 @@ export default function EntrancePage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
-      // 웹앱 테스트를 위해 자동 리다이렉트를 비활성화하고 항상 선택 창이 뜨게 함
-      /*
       const savedRole = localStorage.getItem('plana_user_role');
-      if (savedRole === 'coach') {
-        router.replace('/coach');
-      } else if (savedRole === 'player') {
-        router.replace('/player');
-      } else {
-        router.replace('/onboarding');
+      const savedName = localStorage.getItem('plana_user_name');
+
+      if (savedRole && savedName) {
+        if (savedRole === 'coach') {
+          router.replace('/coach');
+        } else if (savedRole === 'player') {
+          router.replace('/player');
+        } else {
+          router.replace('/onboarding');
+        }
       }
-      */
     }, 1800);
     return () => clearTimeout(timer);
   }, [router]);
@@ -72,8 +73,23 @@ export default function EntrancePage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="flex flex-col items-center justify-center min-h-screen px-6 py-12"
+            className="flex flex-col items-center justify-center min-h-screen px-6 py-12 relative"
           >
+            {/* 상단 앱 설치 버튼 */}
+            <div className="absolute top-10 right-6 z-30">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center space-x-2 bg-gray-900 text-white px-4 py-2 rounded-2xl shadow-lg shadow-gray-200"
+                onClick={() => alert('브라우저 메뉴에서 "홈 화면에 추가"를 선택하여 PLAN A 앱을 설치하실 수 있습니다.')}
+              >
+                <div className="w-6 h-6 bg-white rounded-lg flex items-center justify-center overflow-hidden">
+                  <img src="/plana_logo.png" alt="PLAN A" className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-black">앱 다운로드</span>
+              </motion.button>
+            </div>
+
             <div className="w-full max-w-sm flex flex-col items-center h-full">
               <header className="text-center mb-12 w-full">
                 <div className="mb-6 flex justify-center">
