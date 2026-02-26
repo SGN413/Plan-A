@@ -27,7 +27,7 @@ function useTypewriter(text: string, speed = 40, start = true) {
     return { displayed, done };
 }
 
-type Step = 'name' | 'phone' | 'role';
+type Step = 'name' | 'birth' | 'phone' | 'role';
 
 const ROLES = [
     { id: 'coach', label: '감독/코치', icon: Users, desc: '선수단 관리 및 데이터 분석' },
@@ -39,18 +39,21 @@ export default function OnboardingPage() {
     const router = useRouter();
     const [step, setStep] = useState<Step>('name');
     const [name, setName] = useState('');
+    const [birth, setBirth] = useState('');
     const [phone, setPhone] = useState('');
     const [inputValue, setInputValue] = useState('');
     const inputRef = useRef<HTMLInputElement>(null);
 
     const nameQuestion = `안녕하세요! 👋\n이름을 알려주세요.`;
+    const birthQuestion = `${name}님의 생년월일 6자리를\n입력해주세요.`;
     const phoneQuestion = `반갑습니다, ${name}님!\n전화번호를 알려주세요.`;
     const roleQuestion = `어떤 역할로 사용하시나요?`;
 
     const currentQuestion =
         step === 'name' ? nameQuestion :
-            step === 'phone' ? phoneQuestion :
-                roleQuestion;
+            step === 'birth' ? birthQuestion :
+                step === 'phone' ? phoneQuestion :
+                    roleQuestion;
 
     const { displayed, done } = useTypewriter(currentQuestion, 35, true);
 
@@ -66,6 +69,10 @@ export default function OnboardingPage() {
         if (step === 'name') {
             setName(inputValue.trim());
             setInputValue('');
+            setTimeout(() => setStep('birth'), 300);
+        } else if (step === 'birth') {
+            setBirth(inputValue.trim());
+            setInputValue('');
             setTimeout(() => setStep('phone'), 300);
         } else if (step === 'phone') {
             setPhone(inputValue.trim());
@@ -78,6 +85,7 @@ export default function OnboardingPage() {
         if (roleId === 'parent') return;
         // localStorage에 저장
         localStorage.setItem('plana_user_name', name);
+        localStorage.setItem('plana_user_birth', birth);
         localStorage.setItem('plana_user_phone', phone);
         localStorage.setItem('plana_user_role', roleId);
         if (roleId === 'coach') {
@@ -126,10 +134,11 @@ export default function OnboardingPage() {
                         >
                             <input
                                 ref={inputRef}
-                                type={step === 'phone' ? 'tel' : 'text'}
+                                type={step === 'phone' || step === 'birth' ? 'tel' : 'text'}
+                                maxLength={step === 'birth' ? 6 : undefined}
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
-                                placeholder={step === 'name' ? '이름을 입력해주세요' : '010-0000-0000'}
+                                placeholder={step === 'name' ? '이름을 입력해주세요' : step === 'birth' ? '예: 990101' : '010-0000-0000'}
                                 className="w-full text-xl font-bold text-gray-900 border-b-2 border-gray-900 py-3 outline-none bg-transparent placeholder-gray-300 focus:border-gray-900 transition-colors"
                             />
                             <motion.button

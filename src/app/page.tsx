@@ -11,28 +11,27 @@ export default function EntrancePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // 앱 로드 시 로컬 스토리지에 유저가 있으면 자동 로그인, 없으면 로그인/가입 버튼 노출
     const timer = setTimeout(() => {
-      setIsLoading(false);
       const savedRole = localStorage.getItem('plana_user_role');
       const savedName = localStorage.getItem('plana_user_name');
 
       if (savedRole && savedName) {
+        // 이미 가입된 회원이면 대시보드로 자동 이동 (isLoading 풀지 않음)
         if (savedRole === 'coach') {
           router.replace('/coach');
         } else if (savedRole === 'player') {
           router.replace('/player');
         } else {
-          router.replace('/onboarding');
+          setIsLoading(false);
         }
+      } else {
+        // 회원 정보가 없으면 로고 애니메이션 종료 후 버튼 표시
+        setIsLoading(false);
       }
-    }, 1800);
+    }, 1500); // 로고 보여주는 최소 스플래시 시간
     return () => clearTimeout(timer);
   }, [router]);
-
-  const handleModeSelection = (mode: string) => {
-    if (mode === 'parent') return;
-    router.push(`/${mode}`);
-  };
 
   return (
     <main className="relative min-h-screen bg-white overflow-hidden font-pretendard">
@@ -106,28 +105,22 @@ export default function EntrancePage() {
               </header>
 
               <div className="w-full space-y-4">
-                <ModeCard
-                  id="coach"
-                  icon={Users}
-                  title="코치 모드"
-                  desc="선수단 및 데이터 관리"
-                  onClick={() => handleModeSelection('coach')}
-                />
-                <ModeCard
-                  id="player"
-                  icon={User}
-                  title="선수 모드"
-                  desc="성적 확인 및 코치 피드백"
-                  onClick={() => handleModeSelection('player')}
-                />
-                <ModeCard
-                  id="parent"
-                  icon={UsersRound}
-                  title="학부모 모드"
-                  desc="출결 및 알림 (준비 중)"
-                  disabled
-                  onClick={() => { }}
-                />
+                <motion.button
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => router.push('/login')}
+                  className="w-full bg-gray-900 text-white py-4 rounded-3xl font-black text-lg shadow-xl shadow-gray-200/50 transition-all flex items-center justify-center"
+                >
+                  로그인
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => router.push('/onboarding')}
+                  className="w-full bg-white text-gray-900 border-2 border-gray-900 py-4 rounded-3xl font-black text-lg hover:bg-gray-50 transition-all flex items-center justify-center"
+                >
+                  새로 시작하기 (회원가입)
+                </motion.button>
               </div>
 
               <footer className="text-center mt-auto pt-10">
@@ -143,37 +136,4 @@ export default function EntrancePage() {
   );
 }
 
-function ModeCard({ id, icon: Icon, title, desc, onClick, disabled = false }: { id: string, icon: any, title: string, desc: string, onClick: () => void, disabled?: boolean }) {
-  return (
-    <motion.button
-      whileHover={!disabled ? { scale: 1.02, y: -2 } : {}}
-      whileTap={!disabled ? { scale: 0.98 } : {}}
-      onClick={onClick}
-      disabled={disabled}
-      className={cn(
-        "w-full flex items-center justify-between p-6 rounded-[32px] transition-all duration-300",
-        disabled
-          ? "bg-gray-50/50 border border-gray-100 opacity-60 grayscale cursor-not-allowed"
-          : "bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 group"
-      )}
-    >
-      <div className="flex items-center space-x-5">
-        <div className={cn(
-          "w-14 h-14 rounded-2xl flex items-center justify-center transition-colors",
-          disabled ? "bg-gray-200/50 text-gray-400" : "bg-gray-900/5 text-gray-900 group-hover:bg-gray-900 group-hover:text-white"
-        )}>
-          <Icon size={28} strokeWidth={2.5} />
-        </div>
-        <div className="text-left">
-          <h3 className="font-bold text-gray-900 group-hover:text-gray-900 transition-colors">{title}</h3>
-          <p className="text-xs text-gray-400 font-medium">{desc}</p>
-        </div>
-      </div>
-      {!disabled && (
-        <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-gray-900/10 group-hover:text-gray-900 transition-all">
-          <ChevronRight size={18} strokeWidth={3} />
-        </div>
-      )}
-    </motion.button>
-  );
-}
+
