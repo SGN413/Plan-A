@@ -1,65 +1,163 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { User, Users, UsersRound, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+export default function EntrancePage() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+      // 웹앱 테스트를 위해 자동 리다이렉트를 비활성화하고 항상 선택 창이 뜨게 함
+      /*
+      const savedRole = localStorage.getItem('plana_user_role');
+      if (savedRole === 'coach') {
+        router.replace('/coach');
+      } else if (savedRole === 'player') {
+        router.replace('/player');
+      } else {
+        router.replace('/onboarding');
+      }
+      */
+    }, 1800);
+    return () => clearTimeout(timer);
+  }, [router]);
+
+  const handleModeSelection = (mode: string) => {
+    if (mode === 'parent') return;
+    router.push(`/${mode}`);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="relative min-h-screen bg-white overflow-hidden font-pretendard">
+      <AnimatePresence mode="wait">
+        {isLoading ? (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 1.05 }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+            className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative"
+            >
+              <img
+                src="/plana_logo.png"
+                alt="PlanA Logo"
+                className="w-48 h-auto object-contain"
+              />
+              <motion.div
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.1, 0.3, 0.1]
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute inset-0 bg-gray-400/10 blur-3xl rounded-full"
+              />
+            </motion.div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="content"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="flex flex-col items-center justify-center min-h-screen px-6 py-12"
           >
-            Documentation
-          </a>
+            <div className="w-full max-w-sm flex flex-col items-center h-full">
+              <header className="text-center mb-12 w-full">
+                <div className="mb-6 flex justify-center">
+                  <img
+                    src="/plana_logo.png"
+                    alt="PlanA"
+                    className="w-32 h-auto opacity-80"
+                  />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900 tracking-tight">반갑습니다.</h1>
+                  <p className="text-sm text-gray-400 font-medium mt-1">관리하시는 계정 유형을 선택해주세요.</p>
+                </div>
+              </header>
+
+              <div className="w-full space-y-4">
+                <ModeCard
+                  id="coach"
+                  icon={Users}
+                  title="코치 모드"
+                  desc="선수단 및 데이터 관리"
+                  onClick={() => handleModeSelection('coach')}
+                />
+                <ModeCard
+                  id="player"
+                  icon={User}
+                  title="선수 모드"
+                  desc="성적 확인 및 코치 피드백"
+                  onClick={() => handleModeSelection('player')}
+                />
+                <ModeCard
+                  id="parent"
+                  icon={UsersRound}
+                  title="학부모 모드"
+                  desc="출결 및 알림 (준비 중)"
+                  disabled
+                  onClick={() => { }}
+                />
+              </div>
+
+              <footer className="text-center mt-auto pt-10">
+                <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest leading-loose">
+                  © 2026 PlanA Soccer Academy<br />All rights reserved.
+                </p>
+              </footer>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </main>
+  );
+}
+
+function ModeCard({ id, icon: Icon, title, desc, onClick, disabled = false }: { id: string, icon: any, title: string, desc: string, onClick: () => void, disabled?: boolean }) {
+  return (
+    <motion.button
+      whileHover={!disabled ? { scale: 1.02, y: -2 } : {}}
+      whileTap={!disabled ? { scale: 0.98 } : {}}
+      onClick={onClick}
+      disabled={disabled}
+      className={cn(
+        "w-full flex items-center justify-between p-6 rounded-[32px] transition-all duration-300",
+        disabled
+          ? "bg-gray-50/50 border border-gray-100 opacity-60 grayscale cursor-not-allowed"
+          : "bg-white border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 group"
+      )}
+    >
+      <div className="flex items-center space-x-5">
+        <div className={cn(
+          "w-14 h-14 rounded-2xl flex items-center justify-center transition-colors",
+          disabled ? "bg-gray-200/50 text-gray-400" : "bg-gray-900/5 text-gray-900 group-hover:bg-gray-900 group-hover:text-white"
+        )}>
+          <Icon size={28} strokeWidth={2.5} />
         </div>
-      </main>
-    </div>
+        <div className="text-left">
+          <h3 className="font-bold text-gray-900 group-hover:text-gray-900 transition-colors">{title}</h3>
+          <p className="text-xs text-gray-400 font-medium">{desc}</p>
+        </div>
+      </div>
+      {!disabled && (
+        <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-gray-900/10 group-hover:text-gray-900 transition-all">
+          <ChevronRight size={18} strokeWidth={3} />
+        </div>
+      )}
+    </motion.button>
   );
 }
