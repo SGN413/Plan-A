@@ -3,22 +3,26 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Users, UsersRound, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { LogIn } from 'lucide-react';
 
 export default function EntrancePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
 
+  // 로그인 폼 상태
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [error, setError] = useState('');
+  const [autoLogin, setAutoLogin] = useState(false);
+
   useEffect(() => {
-    // 앱 로드 시 로컬 스토리지에 유저가 있으면 자동 로그인, 없으면 로그인/가입 버튼 노출
+    // 앱 로드 시 로컬 스토리지에 유저가 있으면 자동 로그인, 없으면 로그인 폼 노출
     const timer = setTimeout(() => {
       const savedRole = localStorage.getItem('plana_user_role');
       const savedName = localStorage.getItem('plana_user_name');
-      const autoLogin = localStorage.getItem('plana_auto_login');
+      const savedAutoLogin = localStorage.getItem('plana_auto_login');
 
-      if (savedRole && savedName && autoLogin === 'true') {
-        // 이미 가입된 회원이면 대시보드로 자동 이동 (isLoading 풀지 않음)
+      if (savedRole && savedName && savedAutoLogin === 'true') {
         if (savedRole === 'coach') {
           router.replace('/coach');
         } else if (savedRole === 'player') {
@@ -27,12 +31,27 @@ export default function EntrancePage() {
           setIsLoading(false);
         }
       } else {
-        // 회원 정보가 없으면 로고 애니메이션 종료 후 버튼 표시
         setIsLoading(false);
       }
-    }, 1500); // 로고 보여주는 최소 스플래시 시간
+    }, 1500);
     return () => clearTimeout(timer);
   }, [router]);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !phone.trim()) return;
+
+    const savedName = localStorage.getItem('plana_user_name');
+    const savedPhone = localStorage.getItem('plana_user_phone');
+    const savedRole = localStorage.getItem('plana_user_role');
+
+    if (name === savedName && phone === savedPhone && savedRole) {
+      localStorage.setItem('plana_auto_login', autoLogin ? 'true' : 'false');
+      router.replace(`/${savedRole}`);
+    } else {
+      setError('가입된 정보와 일치하지 않습니다. 회원가입을 먼저 진행해주세요.');
+    }
+  };
 
   return (
     <main className="relative min-h-screen bg-white overflow-hidden font-pretendard">
@@ -91,39 +110,87 @@ export default function EntrancePage() {
             </div>
 
             <div className="w-full max-w-sm flex flex-col items-center h-full">
-              <header className="text-center mb-12 w-full">
-                <div className="mb-6 flex justify-center">
+              <header className="text-center mb-8 w-full mt-10">
+                <div className="mb-4 flex justify-center">
                   <img
                     src="/plana_logo.png"
                     alt="PlanA"
                     className="w-40 h-auto opacity-90"
                   />
                 </div>
-                <div>
-                  <h1 className="text-2xl font-bold text-gray-900 tracking-tight">반갑습니다.</h1>
-                </div>
               </header>
 
-              <div className="w-full space-y-4">
-                <motion.button
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => router.push('/login')}
-                  className="w-full bg-gray-900 text-white py-4 rounded-3xl font-black text-lg shadow-xl shadow-gray-200/50 transition-all flex items-center justify-center"
-                >
-                  로그인
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => router.push('/onboarding')}
-                  className="w-full bg-white text-gray-900 border-2 border-gray-900 py-4 rounded-3xl font-black text-lg hover:bg-gray-50 transition-all flex items-center justify-center"
-                >
-                  새로 시작하기 (회원가입)
-                </motion.button>
+              <div className="w-full">
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-1 text-left">
+                    <label className="text-[10px] font-black text-gray-900 uppercase tracking-widest px-1">
+                      아이디 (이름)
+                    </label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => { setName(e.target.value); setError(''); }}
+                      placeholder="이름을 입력해주세요"
+                      className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-base font-bold text-gray-900 focus:ring-2 focus:ring-gray-900 transition-all placeholder-gray-300"
+                    />
+                  </div>
+
+                  <div className="space-y-1 text-left">
+                    <label className="text-[10px] font-black text-gray-900 uppercase tracking-widest px-1">
+                      비밀번호 (전화번호)
+                    </label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => { setPhone(e.target.value); setError(''); }}
+                      placeholder="010-0000-0000"
+                      className="w-full bg-gray-50 border-none rounded-2xl px-5 py-4 text-base font-bold text-gray-900 focus:ring-2 focus:ring-gray-900 transition-all placeholder-gray-300 tracking-wider"
+                    />
+                  </div>
+
+                  <label className="flex items-center space-x-2 cursor-pointer mt-2 pl-1 mb-4 text-left">
+                    <input
+                      type="checkbox"
+                      checked={autoLogin}
+                      onChange={(e) => setAutoLogin(e.target.checked)}
+                      className="w-4 h-4 rounded text-gray-900 focus:ring-gray-900 cursor-pointer"
+                    />
+                    <span className="text-xs font-bold text-gray-400">자동 로그인</span>
+                  </label>
+
+                  {error && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-xs text-red-500 font-bold px-1 text-left mb-2"
+                    >
+                      {error}
+                    </motion.p>
+                  )}
+
+                  <div className="pt-4 space-y-3">
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
+                      type="submit"
+                      disabled={!name.trim() || !phone.trim()}
+                      className="w-full bg-gray-900 text-white py-4 rounded-[24px] font-black text-base flex items-center justify-center space-x-2 disabled:opacity-30 transition-all"
+                    >
+                      <span>로그인</span>
+                      <LogIn size={18} />
+                    </motion.button>
+
+                    <motion.button
+                      whileTap={{ scale: 0.97 }}
+                      onClick={(e) => { e.preventDefault(); router.push('/onboarding'); }}
+                      className="w-full bg-white text-gray-900 border-2 border-gray-900 py-4 rounded-[24px] font-black text-base hover:bg-gray-50 transition-all flex items-center justify-center"
+                    >
+                      새로 시작하기 (회원가입)
+                    </motion.button>
+                  </div>
+                </form>
               </div>
 
-              <footer className="text-center mt-auto pt-10">
+              <footer className="text-center mt-12 pb-6">
                 <p className="text-[10px] font-bold text-gray-300 uppercase tracking-widest leading-loose">
                   © 2026 PlanA Soccer Academy<br />All rights reserved.
                 </p>
